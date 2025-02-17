@@ -8,6 +8,6 @@ namespace Marcos_Rosario_P1_AP1.DAL
     {
         public Contexto(DbContextOptions<Contexto> options) : base(options) { }
 
-        public DbSet<Modelos> Modelos { get; set; }
+        public DbSet<Aportes> Aportes { get; set; }
     }
 }
