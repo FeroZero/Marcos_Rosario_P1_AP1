@@ -1,0 +1,84 @@
+﻿@page "/Aportes/Editar/{AporteId:int}"
+@inject AportesService aportesService
+@inject NavigationManager Navigate
+@rendermode InteractiveServer
+
+<PageTitle>Editar</PageTitle>
+<EditForm Model="aportes" OnValidSubmit="Guardar">
+    <DataAnnotationsValidator />
+    <div class="container">
+        <div class="card shadow-lg">
+            <div class="card-header">
+                <div class="card-title">Editar Aporte</div>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-5 ms3">
+                        <label class="form-label"><strong>Fecha</strong></label>
+                        <InputDate class="form-control" @bind-Value="aportes.Fecha"></InputDate>
+                        <ValidationMessage For="(()=> aportes.Fecha)"></ValidationMessage>
+                    </div>
+
+                    <div class="col-5 ms3">
+                        <label class="form-label"><strong>Persona</strong></label>
+                        <InputText class="form-control" @bind-Value="aportes.Personas"></InputText>
+                        <ValidationMessage For="(()=> aportes.Personas)"></ValidationMessage>
+                    </div>
+
+                    <div class="col-5 ms3">
+                        <label class="form-label"><strong>Observacion</strong></label>
+                        <InputText class="form-control" @bind-Value="aportes.Observacion"></InputText>
+                        <ValidationMessage For="(()=> aportes.Observacion)"></ValidationMessage>
+                    </div>
+
+                    <div class="col-5 ms3">
+                        <label class="form-label"><strong>Monto</strong></label>
+                        <InputNumber class="form-control" @bind-Value="aportes.Monto"></InputNumber>
+                        <ValidationMessage For="(()=> aportes.Monto)"></ValidationMessage>
+                    </div>
+
+                </div>
+            </div>
+            <div class="card-footer">
+                <button type="submit" class="btn btn-outline-success">Guardar</button>
+                <a href="/Aportes/Index" class="btn btn-outline-secondary">Volver</a>
+            </div>
+            @Notificar
+        </div>
+    </div>
+</EditForm>
+
+@code {
+    [Parameter]
+    public int AporteId { get; set; }
+    public Aportes aportes { get; set; } = new Aportes();
+
+    protected override async Task OnInitializedAsync()
+    {
+        aportes = await aportesService.Buscar(AporteId);
+    }
+
+    public string? Notificar { get; set; }
+
+    public async Task Guardar()
+    {
+        if (!await Validar())
+        {
+            var Guardar = await aportesService.Guardar(aportes);
+            Navigate.NavigateTo("/Aportes/Index");
+            return;
+        }
+        else
+        {
+            Notificar = "Existe una Persona con este Nombre";
+        }
+
+
+    }
+
+    public async Task<bool> Validar()
+    {
+        var Validar = await aportesService.Validar(aportes.Personas, aportes.AporteId);
+        return Validar;
+    }
+}
