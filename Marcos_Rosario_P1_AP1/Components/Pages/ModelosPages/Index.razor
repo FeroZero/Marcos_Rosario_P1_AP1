@@ -10,8 +10,6 @@
 			<a href="/Aportes/Crear" class="btn btn-outline-primary">Crear</a>
 		</div>
 		<div class="card-body">
-			@if(Filtro == "Fecha")
-			{
 				<div class="col-3">
 					<label class="col-form-label"><strong>Desde</strong></label>
 					<InputDate class="form-control" @bind-Value="Desde"></InputDate>
@@ -23,7 +21,6 @@
                       <InputDate class="form-control" @bind-Value="Hasta"></InputDate>
 					</div>
 				</div>
-			}
 			
 			<div class="row">
 				<div class="col-3">
