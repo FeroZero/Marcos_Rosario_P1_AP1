@@ -13,7 +13,7 @@ var ConStr = builder.Configuration.GetConnectionString("SqlConStr");
 
 builder.Services.AddDbContextFactory<Contexto>(o => o.UseSqlServer(ConStr));
 
-builder.Services.AddScoped<Services>();
+builder.Services.AddScoped<AportesService>();
 
 var app = builder.Build();
 
