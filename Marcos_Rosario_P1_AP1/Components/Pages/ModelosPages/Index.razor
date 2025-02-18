@@ -10,6 +10,21 @@
 			<a href="/Aportes/Crear" class="btn btn-outline-primary">Crear</a>
 		</div>
 		<div class="card-body">
+			@if(Filtro == "Fecha")
+			{
+				<div class="col-3">
+					<label class="col-form-label"><strong>Desde</strong></label>
+					<InputDate class="form-control" @bind-Value="Desde"></InputDate>
+				</div>
+
+				<div class="col-3">
+                <label class="col-form-label"><strong>Hasta</strong></label>
+					<div class="input-group">
+                      <InputDate class="form-control" @bind-Value="Hasta"></InputDate>
+					</div>
+				</div>
+			}
+			
 			<div class="row">
 				<div class="col-3">
 					<label class="form-label"><strong>Filtrar Por</strong></label>
@@ -24,6 +39,7 @@
 						<option value="" selected disabled>Elija una opci&oacute;n</option>
 						<option value="Id">Id</option>
 						<option value="Persona">Persona</option>
+						<option value="Fecha">Fecha</option>
 					</InputSelect>
 				</div>
 				<div class="col-4">
@@ -73,12 +89,16 @@
 	public List<Aportes> ListaAportes { get; set; } = new List<Aportes>();
 	public string Filtro { get; set; } = string.Empty;
 	public string ValorFiltro { get; set; } = string.Empty;
+	 public DateTime? Desde { get; set; }
+    public DateTime? Hasta { get; set; }
 
     public double Total { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
         ListaAportes = await aportesService.Listar(a => a.AporteId > 0);
+		Desde = null;
+        Hasta = null;
         foreach (var aportes in ListaAportes)
             Total += aportes.Monto;
     }
@@ -90,8 +110,12 @@
 			if (Filtro == "Id" && int.TryParse(ValorFiltro, out int aportesId))
 				ListaAportes = await aportesService.Listar(t => t.AporteId == aportesId);
 			else if (Filtro == "Persona")
-				ListaAportes = await aportesService.Listar(t => t.Personas.ToLower().Contains(ValorFiltro.ToLower()));
-
+				ListaAportes = await aportesService.Listar(t => t.Personas.ToLower().Contains(ValorFiltro.ToLower())); 
+		}
+		else if (Filtro == "Fecha")
+		{
+			ListaAportes = await aportesService
+			.Listar(f => f.Fecha >= Desde && f.Fecha <= Hasta);
 		}
 		else
 			ListaAportes = await aportesService.Listar(t => t.AporteId > 0);
@@ -102,6 +126,8 @@
 		ListaAportes = await aportesService.Listar(t => t.AporteId > 0);
 		Filtro = string.Empty;
 		ValorFiltro = string.Empty;
+		Desde = null;
+        Hasta = null;
 	}
 }
 
