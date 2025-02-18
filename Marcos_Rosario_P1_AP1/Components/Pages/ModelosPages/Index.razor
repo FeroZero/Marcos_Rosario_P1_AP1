@@ -1,5 +1,107 @@
-﻿<h3>Index</h3>
+﻿@page "/Aportes/Index"
+@inject AportesService aportesService
+@rendermode InteractiveServer
+
+<PageTitle>Index</PageTitle>
+<div class="container">
+	<div class="card shadow-lg">
+		<div class="card-header">
+			<div class="card-title">Registro de Aportes</div>
+			<a href="/Aportes/Crear" class="btn btn-outline-primary">Crear</a>
+		</div>
+		<div class="card-body">
+			<div class="row">
+				<div class="col-3">
+					<label class="form-label"><strong>Filtrar Por</strong></label>
+				</div>
+				<div class="col-4">
+					<label class="form-label"><strong>Busqueda</strong></label>
+				</div>
+			</div>
+			<div class="row">
+				<div class="col-3">
+					<InputSelect class="form-select" @bind-Value="Filtro">
+						<option value="" selected disabled>Elija una opci&oacute;n</option>
+						<option value="Id">Id</option>
+						<option value="Persona">Persona</option>
+					</InputSelect>
+				</div>
+				<div class="col-4">
+					<div class="input-group">
+						<input class="form-control" @bind="ValorFiltro" placeholder="Buscar" />
+						<button type="button" class="bi bi-search btn btn-outline-primary" @onclick="Buscar">Buscar</button>
+					</div>
+				</div>
+				<div class="col-auto">
+					<button type="button" class="bi bi-arrow-counterclockwise btn btn-outline-secondary" @onclick="Restablecer">Nuevo</button>
+				</div>
+			</div>
+			<table class="table table-bordered">
+				<thead>
+					<tr>
+						<th>Id</th>
+						<th>Fecha</th>
+						<th>Persona</th>
+						<th>Observaciones</th>
+						<th>Monto</th>
+					</tr>
+				</thead>
+				<tbody>
+					@foreach(var aportes in ListaAportes)
+					{
+						<tr>
+							<td>@aportes.AporteId</td>
+							<td>@aportes.Fecha</td>
+							<td>@aportes.Personas</td>
+							<td>@aportes.Observacion</td>
+							<td>@aportes.Monto</td>
+							<td><a href="/Aportes/Editar/@aportes.AporteId" class="btn btn-outline-warning">Editar</a></td>
+							<td><a href="/Aportes/Eliminar/@aportes.AporteId" class="btn btn-outline-danger">Eliminar</a></td>
+						</tr>
+					}
+				</tbody>
+			</Table>
+		</div>
+		<div class="card-footer">
+			<f>Total de Personas: @ListaAportes.Count()</f>
+			<f class="text-end">Monto Total: @Total</f>
+		</div>
+	</div>
+</div>
 
 @code {
+	public List<Aportes> ListaAportes { get; set; } = new List<Aportes>();
+	public string Filtro { get; set; } = string.Empty;
+	public string ValorFiltro { get; set; } = string.Empty;
 
+    public double Total { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        ListaAportes = await aportesService.Listar(a => a.AporteId > 0);
+        foreach (var aportes in ListaAportes)
+            Total += aportes.Monto;
+    }
+
+    private async Task Buscar()
+	{
+		if (ValorFiltro.Trim() != "")
+		{
+			if (Filtro == "Id" && int.TryParse(ValorFiltro, out int aportesId))
+				ListaAportes = await aportesService.Listar(t => t.AporteId == aportesId);
+			else if (Filtro == "Persona")
+				ListaAportes = await aportesService.Listar(t => t.Personas.ToLower().Contains(ValorFiltro.ToLower()));
+
+		}
+		else
+			ListaAportes = await aportesService.Listar(t => t.AporteId > 0);
+	}
+
+	private async Task Restablecer()
+	{
+		ListaAportes = await aportesService.Listar(t => t.AporteId > 0);
+		Filtro = string.Empty;
+		ValorFiltro = string.Empty;
+	}
 }
+
