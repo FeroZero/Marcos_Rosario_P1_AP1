@@ -9,12 +9,15 @@ namespace Marcos_Rosario_P1_AP1.Models
         [Required(ErrorMessage = "Campo Obligatorio.")]
         [RegularExpression(@"^[a-zA-Z\s]+$", ErrorMessage = "Solo Caracteres Alfabeticos.")]
         [StringLength(50, ErrorMessage = "Limite Excedido.")]
-        public string Name { get; set; }
+        public string Personas { get; set; }
 		[Required(ErrorMessage = "Campo Obligatorio.")]
         [StringLength(100)]
 		public string Observacion {  get; set; }
 		[Required(ErrorMessage = "Campo Obligatorio.")]
         [Range(0.01, 1000000, ErrorMessage = "Cantidad Excedida.")]
 		public double Monto { get; set; }
+
+		[Required(ErrorMessage = "Campo Obligatorio.")]
+		public DateTime Fecha { get; set; } = DateTime.Now;
 	}
 }
