@@ -1,15 +1,15 @@
-﻿@page "/Aportes/Crear"
+﻿@page "/Aportes/Editar/{AporteId:int}"
 @inject AportesService aportesService
 @inject NavigationManager Navigate
 @rendermode InteractiveServer
 
-<PageTitle>Crear</PageTitle>
+<PageTitle>Editar</PageTitle>
 <EditForm Model="aportes" OnValidSubmit="Guardar">
-    <DataAnnotationsValidator/>
+    <DataAnnotationsValidator />
     <div class="container">
         <div class="card shadow-lg">
             <div class="card-header">
-                <div class="card-title">Crear Aporte</div>
+                <div class="card-title">Editar Aporte</div>
             </div>
             <div class="card-body">
                 <div class="row">
@@ -49,12 +49,20 @@
 </EditForm>
 
 @code {
+    [Parameter]
+    public int AporteId { get; set; }
     public Aportes aportes { get; set; } = new Aportes();
+
+    protected override async Task OnInitializedAsync()
+    {
+        aportes = await aportesService.Buscar(AporteId);
+    }
+
     public string? Notificar { get; set; }
 
     public async Task Guardar()
     {
-        if(!await Validar())
+        if (!await Validar())
         {
             var Guardar = await aportesService.Guardar(aportes);
             Navigate.NavigateTo("/Aportes/Index");
@@ -65,7 +73,7 @@
             Notificar = "Existe una Persona con este Nombre";
         }
 
-        
+
     }
 
     public async Task<bool> Validar()

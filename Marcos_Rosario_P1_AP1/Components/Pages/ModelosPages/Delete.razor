@@ -1,0 +1,37 @@
+﻿@page "/Aportes/Eliminar/{AporteId:int}"
+@inject AportesService aportesService
+@inject NavigationManager Navigate
+@rendermode InteractiveServer
+
+<PageTitle>Eliminar</PageTitle>
+<div class="container">
+    <div class="card shadow-lg">
+        <div class="card-header">
+            <div class="card-title">Eliminar Aporte</div>
+        </div>
+        <div class="card-body">
+            <div class="card-subtitle">Esta Seguro que quiere eliminar el aporte de #@aportes.AporteId @aportes.Personas?</div>
+        </div>
+        <div class="card-footer">
+            <a href="/Aportes/Index" class="btn btn-outline-secondary">Volver</a>
+            <button type="button" class="btn btn-outline-danger" @onclick="Eliminar">Eliminar</button>
+        </div>
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public int AporteId { get; set; }
+    public Aportes aportes { get; set; } = new Aportes();
+
+    protected override async Task OnInitializedAsync()
+    {
+        aportes = await aportesService.Buscar(AporteId);
+    }
+
+    public async Task Eliminar()
+    {
+        var eliminar = await aportesService.Eliminar(aportes.AporteId);
+        Navigate.NavigateTo("/Aportes/Index");
+    }
+}
